@@ -5,11 +5,14 @@ import {useState } from "react";
 export default function App() {
   
 const [textInputValue, setTextInputValue] = useState('');
-const [choiceList, setPlayerChoiceList] = useState([])
-const [enemyValue, setEnemyValue] = useState('');
-const [enemyList, setEnemyList] = useState([])
+const [text, setText] = useState('');
 
-const _renderItem = ({item: playerChoice}) => {
+const [playerWins, setPlayerWins] = useState(0)
+const [enemyWins, setEnemyWins] = useState(0)
+
+const renderWin = () => {
+  var playerChoice = textInputValue;
+  playerChoice = playerChoice.toLowerCase();
   var enemyChoice = Math.floor(Math.random() * 3) + 1 ;
   var enemyStringChoice;
   if (enemyChoice == 1) {
@@ -21,30 +24,25 @@ const _renderItem = ({item: playerChoice}) => {
   enemyStringChoice = "påse";
 }
 if ( playerChoice == enemyStringChoice){
-  return (
-    <Text>{"Du gjorde"} {playerChoice} {"och motståndaren gjorde"} {enemyStringChoice}{" - Det innebär att det blev lika!"}</Text>
-  )
+  
+    setText("Du gjorde " + playerChoice + " och motståndaren gjorde " + enemyStringChoice + ". Det innebär att det blev lika!")
+    
 }
 else if (playerChoice == "sten" && enemyStringChoice == "sax" || playerChoice == "sax" && enemyStringChoice == "påse" || playerChoice == "påse" && enemyStringChoice == "sten")
 {
-return (
-  <Text>{"Du gjorde"} {playerChoice} {"och motståndaren gjorde"} {enemyStringChoice} {"- Det innebär att du vann!"}</Text>
-)} else {
-  return (
-<Text>{"Du gjorde"} {playerChoice} {"och motståndaren gjorde"} {enemyStringChoice} {"- Det innebär att du förlorade!"}</Text>
-)
+  setText("Du gjorde " + playerChoice + " och motståndaren gjorde " + enemyStringChoice + ". Det innebär att du vann!")
+  setPlayerWins(playerWins+1)
+} else {
+  
+  setText("Du gjorde " + playerChoice + " och motståndaren gjorde " + enemyStringChoice + ". Det innebär att du förlorade!")
+  setEnemyWins(enemyWins+1)
+
 }
 }
 
 const handleTextChange = (text) => [
   setTextInputValue(text)
-  
 ]
-
-const handleAdd = () => {
-  setPlayerChoiceList(prev => prev.concat(textInputValue))
-
-}
 
   return (
     <View style={styles.container}>
@@ -54,15 +52,14 @@ const handleAdd = () => {
         style={styles.textinput}
         onChangeText={handleTextChange}
         value={textInputValue}
-        placeholder="Skriv Sten, Sax eller Påse!"
+        placeholder="Skriv sten, sax eller påse!"
       />
-      <Button title="Val" onPress={handleAdd}></Button>
+      <Button title="Val" onPress={() => renderWin()}></Button>
       </View>
-      <FlatList
-      data={choiceList}
-      renderItem={_renderItem}
-      keyExtractor={(item, index) => index}
-      />
+      <View>
+        <Text>{text}</Text>
+        <Text>Resultat: {playerWins} - {enemyWins}</Text>
+      </View>
       <StatusBar style="auto" />
       </View>
   );
